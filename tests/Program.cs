@@ -118,6 +118,8 @@ if (args.Length == 2 && args[0] == "--validate-signed")
         var plan = UpdateInstaller.PrepareSigned(args[1], Path.Combine(root, "target"), false, root);
         await UpdateInstaller.ValidateCoresAsync(plan, profile);
         Check(true, "Production signature and bundled engines validate as a matching release");
+        await UpdateInstaller.ValidateCoresAsync(plan, new Profile());
+        Check(true, "A clean installation validates engines without an enrolled profile");
         using var archive = System.IO.Compression.ZipFile.OpenRead(Path.Combine(Directory.GetDirectories(root, "signed-*")[0], "package.zip"));
         Check(!archive.Entries.Any(e => e.FullName.Equals("configs/profile.json", StringComparison.OrdinalIgnoreCase) || e.FullName.EndsWith(".key") || e.FullName.EndsWith(".dpapi")), "Signed release contains no enrolled profile or key files");
     }

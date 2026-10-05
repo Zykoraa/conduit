@@ -7,7 +7,12 @@ $installed = Join-Path $env:ProgramFiles 'WorkTunnel-Client/WorkTunnel.exe'
 function SetupAction([string]$action) {
     $process = Start-Process -FilePath $setup -ArgumentList $action -WindowStyle Hidden -PassThru
     if (-not $process.WaitForExit(60000)) { $process.Kill(); throw "Setup timed out: $action" }
-    if ($process.ExitCode -ne 0) { throw "Setup failed: $action" }
+    if ($process.ExitCode -ne 0) {
+        $logRoot = Join-Path $env:ProgramData 'WorkTunnel/updates-Client'
+        $lastError = Get-ChildItem -LiteralPath $logRoot -Filter 'setup-error-*.txt' -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+        if ($lastError) { Get-Content -LiteralPath $lastError.FullName | Write-Host }
+        throw "Setup failed: $action"
+    }
 }
 try {
     SetupAction '--install'

@@ -93,7 +93,8 @@ internal static class UpdateInstaller
         if (!Version.TryParse(FileVersionInfo.GetVersionInfo(Under(plan.Source, "WorkTunnel.exe")).FileVersion, out _))
             throw new InvalidDataException("The app executable is damaged or missing version metadata.");
         var p = profile ?? (InstallSecurity.IsAdministrator ? new Profile() : Profile.Load());
-        if (!p.IsValid) p = new Profile { User = "Validation", Uuid = "11111111-1111-4111-8111-111111111111", Server = "203.0.113.1", Sni = "www.apple.com" };
+        if (!p.IsValid) p = new Profile { User = "Validation", Uuid = "11111111-1111-4111-8111-111111111111", Server = "203.0.113.1", Sni = "example.com",
+            PublicKey = new string('A', 43), ShortId = "aabb" };
         string validationRoot = InstallSecurity.IsAdministrator ? ProtectedRoot : Root;
         Directory.CreateDirectory(validationRoot);
         if (InstallSecurity.IsAdministrator) SecretStore.RestrictDirectory(validationRoot, System.Security.Principal.WindowsIdentity.GetCurrent().User!);
