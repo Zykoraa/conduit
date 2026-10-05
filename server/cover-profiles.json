@@ -1,0 +1,15 @@
+{
+  "active": "apple",
+  "profiles": {
+    "apple": {
+      "dest": "www.apple.com:443",
+      "serverNames": [ "www.apple.com" ],
+      "sni": "www.apple.com"
+    },
+    "bamwx": {
+      "dest": "bamwx.com:443",
+      "serverNames": [ "bamwx.com" ],
+      "sni": "bamwx.com"
+    }
+  }
+}

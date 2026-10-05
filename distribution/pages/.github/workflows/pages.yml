@@ -1,0 +1,64 @@
+name: Publish signed Conduit downloads
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag to deploy (empty uses latest)
+        required: false
+        type: string
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
+      - name: Prepare verified release files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.event.release.tag_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$RELEASE_TAG" ]; then RELEASE_TAG=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName); fi
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Invalid release tag'; exit 1; }
+          version="${RELEASE_TAG#v}"
+          mkdir public
+          cp distribution/pages/index.html public/index.html
+          touch public/.nojekyll
+          for flavor in Owner Client; do
+            for asset in "Conduit-$flavor-$version-Setup.exe" "Conduit-$flavor-$version.wtupdate" "Conduit-$flavor-stable.json"; do
+              gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$asset" --dir public
+            done
+          done
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern SHA256SUMS.txt --dir public
+          (cd public && sha256sum --check SHA256SUMS.txt)
+          RELEASE_VERSION="$version" python3 - <<'PY'
+          import hashlib, os, pathlib
+          folder = pathlib.Path('public')
+          version = os.environ['RELEASE_VERSION']
+          html = (folder / 'index.html').read_text()
+          html = html.replace('{{VERSION}}', version)
+          for flavor in ('Owner', 'Client'):
+              digest = hashlib.sha256((folder / f'Conduit-{flavor}-{version}-Setup.exe').read_bytes()).hexdigest()
+              html = html.replace('{{' + flavor.upper() + '_HASH}}', digest)
+          assert '{{' not in html, 'Unresolved page placeholder'
+          (folder / 'index.html').write_text(html)
+          PY
+          python3 -c 'import pathlib; total=sum(p.stat().st_size for p in pathlib.Path("public").rglob("*") if p.is_file()); assert total < 900_000_000, "Pages release exceeds the deployment budget"'
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+        with:
+          path: public
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
+        id: deploy

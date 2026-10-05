@@ -1,0 +1,32 @@
+{
+  "files": [
+    {
+      "path": "cores/sing_box/libcronet.dll",
+      "sha256": "257F966119FFCA91D7A2CE110A4B668B865D88BF2ED5339FD06A5644B0D02823"
+    },
+    {
+      "path": "cores/sing_box/sing-box.exe",
+      "sha256": "A4476DD768168A77E249050066BB32774ADDEFCC37DA123978623E7B2819DE28"
+    },
+    {
+      "path": "cores/xray/wintun.dll",
+      "sha256": "E5DA8447DC2C320EDC0FC52FA01885C103DE8C118481F683643CACC3220DAFCE"
+    },
+    {
+      "path": "cores/xray/xray.exe",
+      "sha256": "859FB86DC5A92B2EC809CEBF20962C895A45727FB8870D0F70A6EFB5772B9AED"
+    }
+  ],
+  "engines": [
+    {
+      "upstream": "https://github.com/XTLS/Xray-core",
+      "path": "cores/xray/xray.exe",
+      "version": "26.7.28"
+    },
+    {
+      "upstream": "https://github.com/SagerNet/sing-box",
+      "path": "cores/sing_box/sing-box.exe",
+      "version": "1.13.19"
+    }
+  ]
+}

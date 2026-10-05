@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems><DefineConstants>OWNER_BUILD</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../*.cs" Exclude="../../Program.cs;../../TrayContext.cs" />
+    <Compile Include="Preview.cs" />
+    <Content Include="../../configs/*.json" Link="configs/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <PackageReference Include="QRCoder" Version="1.8.0" />
+    <EmbeddedResource Include="../../assets/Conduit.ico" LogicalName="Conduit.ico" />
+  </ItemGroup>
+</Project>

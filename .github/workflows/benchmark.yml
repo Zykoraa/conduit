@@ -1,0 +1,49 @@
+name: Controlled resource comparison
+on:
+  workflow_dispatch:
+    inputs:
+      soak_seconds:
+        description: Sustained load seconds per product per round (30 to 300)
+        default: '120'
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  comparison:
+    runs-on: windows-2025
+    timeout-minutes: 35
+    env:
+      RestoreLockedMode: 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9
+        with:
+          dotnet-version: '10.0.x'
+      - name: Prepare disposable installed release
+        shell: pwsh
+        run: |
+          dotnet run --project tools/ReleaseTool/ReleaseTool.csproj -c Release -- init ReleaseTrust.cs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./scripts/package-client.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $setup = Start-Process -FilePath ./dist/Conduit-Client-Setup.exe -ArgumentList --install -WindowStyle Hidden -PassThru -Wait
+          if ($setup.ExitCode -ne 0) { throw 'Fixture installation failed' }
+          dotnet build tests/WorkTunnel.Checks.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet build tools/BenchmarkDriver/BenchmarkDriver.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Measure both products with the same workload
+        env:
+          SOAK_SECONDS: ${{ inputs.soak_seconds || '120' }}
+        shell: pwsh
+        run: ./scripts/run-comparison.ps1 -SoakSeconds ([int]$env:SOAK_SECONDS)
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: controlled-comparison
+          path: |
+            artifacts/private/comparison/report.json
+            artifacts/private/comparison/fixture-diagnostics.txt
+          if-no-files-found: warn
+          retention-days: 14

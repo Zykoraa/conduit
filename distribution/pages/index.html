@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark"><title>Conduit — Windows downloads</title>
+<style>
+:root{font-family:Segoe UI,system-ui,sans-serif;color:#e5eaf2;background:#0b1018;line-height:1.6}*{box-sizing:border-box}body{margin:0}main{max-width:960px;margin:auto;padding:64px 24px 36px}header{border-bottom:1px solid #28313e;padding-bottom:40px;margin-bottom:32px}.brand{font-size:20px;font-weight:650;color:#83e3ef;letter-spacing:.03em}.mark{display:inline-flex;align-items:center;justify-content:center;border:2px solid #83e3ef;border-radius:50%;width:30px;height:30px;margin-right:10px}h1{font-size:clamp(32px,6vw,52px);line-height:1.15;letter-spacing:-.035em;margin:28px 0 20px}h2{font-size:24px;margin:0 0 12px}h3{margin:0 0 8px;font-size:20px}p{color:#b0bdcd;max-width:650px}a{color:#b2c2ff;text-underline-offset:4px}a:hover{color:white}a:focus-visible,button:focus-visible{outline:2px solid #83e3ef;outline-offset:5px}.version{display:inline-block;background:#172630;border:1px solid #2c4a54;padding:5px 12px;border-radius:30px;color:#a7eff0;font-size:14px}.downloads{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 0 44px}.card{background:#151d29;border:1px solid #2b3748;border-radius:14px;padding:26px}.button{display:inline-block;padding:11px 20px;margin:12px 0;background:#91a7ff;border-radius:8px;color:#101725;text-decoration:none;font-weight:650}.button:hover{background:#b6c4ff;color:#101725}code{font-size:13px;color:#c4ecf1;overflow-wrap:anywhere}details{border-top:1px solid #28313e;padding:18px 0}summary{cursor:pointer;font-weight:600}.foot{margin-top:36px;border-top:1px solid #28313e;padding-top:20px;font-size:13px;color:#95a5ba}.hash{font-size:12px}.hint{font-size:14px}li{color:#b0bdcd;margin:8px 0}@media(max-width:600px){main{padding-top:32px}.downloads{grid-template-columns:1fr}.card{padding:20px}}
+</style>
+</head>
+<body><main>
+<header><div class="brand"><span class="mark" aria-hidden="true">C</span>Conduit</div><h1>Your personal tunnel,<br>with clear controls.</h1><p>A Windows client for supported personal servers and v2rayN imports. Check the connection, follow live traffic, and choose whether to enforce a network lock.</p><span class="version">Version {{VERSION}} · Windows x64</span></header>
+<h2>Download Conduit</h2><p>Both editions include the tunnel engines. Each device imports its own connection link or supported server settings.</p>
+<div class="downloads">
+<section class="card"><h3>Client</h3><p>For ordinary use on a Windows PC.</p><a class="button" href="Conduit-Client-{{VERSION}}-Setup.exe">Download Client Setup</a><p class="hint">SHA-256 <code class="hash">{{CLIENT_HASH}}</code></p></section>
+<section class="card"><h3>Owner</h3><p>For the PC used to manage server devices and access shared usage tools.</p><a class="button" href="Conduit-Owner-{{VERSION}}-Setup.exe">Download Owner Setup</a><p class="hint">SHA-256 <code class="hash">{{OWNER_HASH}}</code></p></section>
+</div>
+<h2>Update an existing installation</h2><p>Open Settings → Updates, then choose Check now. Automatic checks are optional; downloading and installing an update require your action.</p>
+<details><summary>Official signed feed addresses</summary><p>Client: <code>https://zykoraa.github.io/conduit/Conduit-Client-stable.json</code></p><p>Owner: <code>https://zykoraa.github.io/conduit/Conduit-Owner-stable.json</code></p></details>
+<details><summary>Download a signed update bundle manually</summary><p>Choose the edition matching your installation.</p><ul><li><a href="Conduit-Client-{{VERSION}}.wtupdate">Client {{VERSION}} update</a></li><li><a href="Conduit-Owner-{{VERSION}}.wtupdate">Owner {{VERSION}} update</a></li><li><a href="SHA256SUMS.txt">Download checksums</a></li></ul></details>
+<details><summary>Connection and protection</summary><p>Verification uses sampled connection checks. Network lock is a separate, optional setting that blocks ordinary outbound traffic subject to documented exceptions. It affects the whole PC; Conduit includes Restore normal internet for recovery.</p><p>Live destination records stay local. The app does not use a destination-geolocation service.</p></details>
+<details><summary>Windows installation</summary><p>Windows asks for administrator access to install Conduit and run the tunnel host. Setup has no Windows Authenticode publisher certificate. Compare the download hash above before first installation; installed Conduit verifies signed update feeds and bundles.</p></details>
+<footer class="foot">Official Conduit downloads · <a href="https://github.com/Zykoraa/conduit/releases">Release history</a></footer>
+</main></body></html>

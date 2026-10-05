@@ -1,0 +1,39 @@
+{
+  "log": { "level": "warn", "timestamp": true },
+  "dns": {
+    "servers": [
+      { "tag": "remote", "type": "https", "server": "1.1.1.1", "path": "/dns-query", "detour": "proxy" }
+    ],
+    "final": "remote",
+    "strategy": "prefer_ipv4"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun",
+      "interface_name": "worktunnel",
+      "address": [ "172.19.0.1/30", "fdfe:dcba:9876::1/126" ],
+      "mtu": 1400,
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "gvisor"
+    }
+  ],
+  "outbounds": [
+    { "type": "socks", "tag": "proxy", "server": "127.0.0.1", "server_port": 10808, "version": "5" },
+    { "type": "direct", "tag": "direct" }
+  ],
+  "route": {
+    "auto_detect_interface": true,
+    "final": "proxy",
+    "rules": [
+      { "action": "sniff" },
+      { "protocol": "dns", "action": "hijack-dns" },
+      { "port": 53, "action": "hijack-dns" },
+      { "ip_cidr": [ "172.19.0.0/30", "fdfe:dcba:9876::/126" ], "action": "reject" },
+      { "ip_cidr": [ "203.0.113.1/32" ], "port": 443, "outbound": "direct" },
+      { "ip_is_private": true, "outbound": "direct" },
+      { "network": "udp", "port": 443, "action": "reject" }
+    ]
+  }
+}

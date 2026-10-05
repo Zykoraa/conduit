@@ -1,0 +1,28 @@
+<Project>
+  <PropertyGroup>
+    <ConduitObfuscate Condition="'$(ConduitObfuscate)' == '' and '$(Configuration)' == 'Release'">true</ConduitObfuscate>
+    <DebugType Condition="'$(ConduitObfuscate)' == 'true'">none</DebugType>
+    <DebugSymbols Condition="'$(ConduitObfuscate)' == 'true'">false</DebugSymbols>
+  </PropertyGroup>
+  <!-- Work on a copy, then replace only our assembly in the SDK bundle input. -->
+  <Target Name="ObfuscateConduitBundle" BeforeTargets="GenerateSingleFileBundle" DependsOnTargets="PrepareForBundle"
+          Condition="'$(ConduitObfuscate)' == 'true' and '$(PublishSingleFile)' == 'true'">
+    <PropertyGroup>
+      <_ObfuscationRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))</_ObfuscationRoot>
+      <_ObfuscationDir>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)obfuscated'))</_ObfuscationDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(_ObfuscationDir)" />
+    <ItemGroup>
+      <_ConduitAssembly Include="@(FilesToBundle)" Condition="'%(Filename)%(Extension)' == '$(TargetFileName)'" />
+    </ItemGroup>
+    <Error Condition="'@(_ConduitAssembly)' == ''" Text="Cannot find the Conduit assembly to obfuscate. Publishing stopped." />
+    <WriteLinesToFile File="$(_ObfuscationDir)/dependencies.txt" Lines="@(FilesToBundle->'%(FullPath)')" Overwrite="true" />
+    <Exec WorkingDirectory="$(_ObfuscationRoot)" Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(_ObfuscationRoot)/scripts/obfuscate.ps1&quot; -Assembly &quot;@(_ConduitAssembly->'%(FullPath)')&quot; -Output &quot;$(_ObfuscationDir)&quot; -Dependencies &quot;$(_ObfuscationDir)/dependencies.txt&quot; -Version &quot;$(Version)&quot; -OwnerBuild &quot;$(OwnerBuild)&quot;" />
+    <ItemGroup>
+      <FilesToBundle Remove="@(_ConduitAssembly)" />
+      <FilesToBundle Include="$(_ObfuscationDir)/$(TargetFileName)">
+        <RelativePath>$(TargetFileName)</RelativePath>
+      </FilesToBundle>
+    </ItemGroup>
+  </Target>
+</Project>

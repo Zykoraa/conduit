@@ -1,0 +1,40 @@
+{
+  "log": { "loglevel": "warning" },
+  "inbounds": [
+    { "listen": "127.0.0.1", "port": 10808, "protocol": "socks", "settings": { "udp": true } }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "__SERVER__",
+            "port": 443,
+            "users": [
+              { "id": "__UUID__", "encryption": "none", "flow": "xtls-rprx-vision" }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "__SNI__",
+          "fingerprint": "chrome",
+          "publicKey": "__PUBLIC_KEY__",
+          "shortId": "__SHORT_ID__",
+          "spiderX": "/"
+        }
+      },
+      "tag": "proxy",
+      "mux": {
+        "enabled": true,
+        "concurrency": -1,
+        "xudpConcurrency": 16,
+        "xudpProxyUDP443": "reject"
+      }
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>WorkTunnel</RootNamespace>
+    <AssemblyName>WorkTunnel</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyTitle>Conduit</AssemblyTitle>
+    <Product>Conduit</Product>
+    <Version>2.4.3</Version>
+    <ApplicationIcon>assets/Conduit.ico</ApplicationIcon>
+
+    <!-- Distribution: one self-contained .exe; coworkers install nothing. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+
+    <!-- Owner-only build gate: `dotnet publish -p:OwnerBuild=true` enables the
+         SSH data-usage readout. Coworker builds omit it, so the key never ships. -->
+    <DefineConstants Condition="'$(OwnerBuild)'=='true'">$(DefineConstants);OWNER_BUILD</DefineConstants>
+  </PropertyGroup>
+
+  <!-- configs + tools ride alongside the .exe as loose files. -->
+  <ItemGroup>
+    <Compile Remove="tests\**\*.cs" />
+    <Compile Remove="installer\**\*.cs" />
+    <Compile Remove="tools\**\*.cs" />
+    <PackageReference Include="QRCoder" Version="1.8.0" />
+    <EmbeddedResource Include="assets/Conduit.ico" LogicalName="Conduit.ico" />
+    <Content Include="configs\**\*" Exclude="configs\profile.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="licenses\**\*" Exclude="licenses\Natural-Earth.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- The pinned cores are launched as external processes by path, so they must
+       stay LOOSE next to the .exe. Single-file publish would otherwise sweep the
+       .exe/.dll out of the Content set, so copy them explicitly after build/publish. -->
+  <Target Name="CopyCoresBuild" AfterTargets="Build">
+    <ItemGroup>
+      <CoreFilesB Include="$(MSBuildProjectDirectory)\cores\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(CoreFilesB)"
+          DestinationFiles="@(CoreFilesB->'$(OutDir)cores\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="CopyCoresPublish" AfterTargets="Publish">
+    <PropertyGroup>
+      <_PubDir>$([MSBuild]::EnsureTrailingSlash('$(PublishDir)'))</_PubDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <CoreFilesP Include="$(MSBuildProjectDirectory)\cores\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(CoreFilesP)"
+          DestinationFiles="@(CoreFilesP->'$(_PubDir)cores\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Import Project="build/Obfuscation.targets" />
+</Project>

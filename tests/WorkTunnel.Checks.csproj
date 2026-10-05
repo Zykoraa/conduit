@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <DefineConstants Condition="'$(OwnerBuild)'=='true'">$(DefineConstants);OWNER_BUILD</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\TrayNotificationPolicy.cs" Link="TrayNotificationPolicy.cs" />
+    <Compile Include="..\ConnectionPreferences.cs" Link="ConnectionPreferences.cs" />
+    <Compile Include="..\RecoveryPolicy.cs" Link="RecoveryPolicy.cs" />
+    <Compile Include="..\IncidentRecorder.cs" Link="IncidentRecorder.cs" />
+    <Compile Include="..\RouteProbe.cs" Link="RouteProbe.cs" />
+    <Compile Include="..\ImportedProxy.cs" Link="ImportedProxy.cs" />
+    <Compile Include="..\EngineConfiguration.cs" Link="EngineConfiguration.cs" />
+    <Compile Include="..\ConnectionDiagnosis.cs" Link="ConnectionDiagnosis.cs" />
+    <Compile Include="..\ConnectionTelemetry.cs" Link="ConnectionTelemetry.cs" />
+    <Compile Remove="UI/**/*.cs" />
+    <Compile Include="..\ITunnelController.cs" Link="ITunnelController.cs" />
+    <Compile Include="..\TunnelBroker.cs" Link="TunnelBroker.cs" />
+    <Compile Include="..\ProcessLifetime.cs" Link="ProcessLifetime.cs" />
+    <Compile Include="..\SecretStore.cs" Link="SecretStore.cs" />
+    <Compile Include="..\NetworkLock.cs" Link="NetworkLock.cs" />
+    <Compile Include="..\ReleaseSignature.cs" Link="ReleaseSignature.cs" />
+    <Compile Include="..\ReleaseTrust.cs" Link="ReleaseTrust.cs" />
+    <Compile Include="..\InstallSecurity.cs" Link="InstallSecurity.cs" />
+    <Compile Include="..\UserLaunch.cs" Link="UserLaunch.cs" />
+    <Compile Include="..\SupportData.cs" Link="SupportData.cs" />
+    <Compile Include="..\QualityProbe.cs" Link="QualityProbe.cs" />
+    <Compile Include="..\SettingsSnapshot.cs" Link="SettingsSnapshot.cs" />
+    <Compile Include="..\UpdateInstaller.cs" Link="UpdateInstaller.cs" />
+    <Compile Include="..\TunnelHealth.cs" Link="TunnelHealth.cs" />
+    <Compile Include="..\TunnelTransport.cs" Link="TunnelTransport.cs" />
+    <Compile Include="..\VisualPerformance.cs" Link="VisualPerformance.cs" />
+    <Compile Include="..\UpdateFeed.cs" Link="UpdateFeed.cs" />
+    <Compile Include="..\UpdateDiscovery.cs" Link="UpdateDiscovery.cs" />
+    <Compile Include="..\DashboardTelemetry.cs" Link="DashboardTelemetry.cs" />
+    <Compile Include="..\DeviceLink.cs" Link="DeviceLink.cs" />
+    <Compile Include="..\Profile.cs" Link="Profile.cs" />
+    <Compile Include="..\AppPaths.cs" Link="AppPaths.cs" />
+    <Compile Include="..\NetworkMonitor.cs" Link="NetworkMonitor.cs" />
+    <Compile Include="..\TunnelController.cs" Link="TunnelController.cs" />
+    <Compile Include="..\ExitIpChecker.cs" Link="ExitIpChecker.cs" />
+  </ItemGroup>
+</Project>

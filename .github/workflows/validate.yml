@@ -1,0 +1,55 @@
+name: Windows release checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  RestoreLockedMode: 'true'
+jobs:
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9
+        with:
+          dotnet-version: '10.0.x'
+      - name: Check public source and Git history
+        shell: pwsh
+        run: |
+          ./scripts/check-public-source.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./scripts/check-secrets.ps1
+      - name: Check engine pins
+        shell: pwsh
+        run: ./scripts/check-engines.ps1
+      - name: Behavioral and disposable-machine network tests
+        shell: pwsh
+        run: |
+          dotnet run --project tests/WorkTunnel.Checks.csproj -c Release -p:OwnerBuild=true
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet run --project tests/WorkTunnel.Checks.csproj -c Release -p:OwnerBuild=false -- --native cores/sing_box/sing-box.exe
+      - name: Build dashboard and installer
+        shell: pwsh
+        run: |
+          dotnet build -c Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet build installer/WorkTunnel.Setup.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet build tests/UI/WorkTunnel.UiChecks.csproj -c Release
+      - name: Test-signed blank installer and repair lifecycle
+        shell: pwsh
+        run: |
+          # Ephemeral runner-only trust. The production private key never goes to CI.
+          dotnet run --project tools/ReleaseTool/ReleaseTool.csproj -c Release -- init ReleaseTrust.cs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./scripts/package-client.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./scripts/test-setup.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./scripts/package-owner.ps1
