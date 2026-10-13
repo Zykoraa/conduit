@@ -53,3 +53,10 @@ jobs:
           ./scripts/test-setup.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./scripts/package-owner.ps1
+
+      - name: Verify published guide and server archive
+        shell: pwsh
+        run: |
+          ./scripts/prepare-public-release.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./scripts/check-release-guides.ps1

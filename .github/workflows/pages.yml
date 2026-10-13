@@ -42,13 +42,21 @@ jobs:
               gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$asset" --dir public
             done
           done
+          assets=$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
+          for asset in "Conduit-VM-Setup-$version.md" "Conduit-Server-$version.zip"; do
+            if printf '%s\n' "$assets" | grep -Fxq "$asset"; then
+              gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern "$asset" --dir public
+            fi
+          done
           gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern SHA256SUMS.txt --dir public
           (cd public && sha256sum --check SHA256SUMS.txt)
           RELEASE_VERSION="$version" python3 - <<'PY'
-          import hashlib, os, pathlib
+          import hashlib, os, pathlib, re
           folder = pathlib.Path('public')
           version = os.environ['RELEASE_VERSION']
           html = (folder / 'index.html').read_text()
+          if not (folder / f'Conduit-VM-Setup-{version}.md').exists():
+              html = re.sub(r'<!-- VM_GUIDE_START -->.*?<!-- VM_GUIDE_END -->', '', html, flags=re.S)
           html = html.replace('{{VERSION}}', version)
           for flavor in ('Owner', 'Client'):
               digest = hashlib.sha256((folder / f'Conduit-{flavor}-{version}-Setup.exe').read_bytes()).hexdigest()

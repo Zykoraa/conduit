@@ -1,4 +1,4 @@
-# Conduit 2.4.3 — setup and daily use
+# Conduit 2.4.4 — setup and daily use
 
 ## Dashboard interactions
 
@@ -105,3 +105,7 @@ The existing manual flow remains: download the matching Owner/Client `.wtupdate`
 **Roll back** restores files saved by the previous installer/updater transaction; it does not undo server changes or profile edits. A fresh install has no earlier app to restore. Use the latest Setup for **Repair**. An older installer refuses to downgrade a newer app. Windows Installed apps opens Setup for **Uninstall**. Uninstall keeps your encrypted profile and diagnostic history, and removes Conduit's lock.
 
 The Setup executable is not Authenticode-signed. Obtain the initial installer from the [official download site](https://zykoraa.github.io/conduit/) and compare its SHA-256 with the published checksum. Signed updates establish continuity with the release key embedded in your trusted installation; they do not create Windows publisher reputation.
+
+## Oracle VM and Xray reference
+
+See [VM_SETUP.md](VM_SETUP.md) for Conduit’s existing VM, Oracle firewall/routes, SSH, REALITY, device profiles and recovery.
