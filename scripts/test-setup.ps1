@@ -17,6 +17,7 @@ function SetupAction([string]$action) {
 try {
     SetupAction '--install'
     if (-not (Test-Path -LiteralPath $installed)) { throw 'App not installed' }
+    if ((Get-FileHash -LiteralPath (Join-Path $env:ProgramFiles 'WorkTunnel-Client/VM_SETUP.md')).Hash -ne (Get-FileHash -LiteralPath (Join-Path $root 'VM_SETUP.md')).Hash) { throw 'Installed VM guide differs from source' }
     $programs = [Environment]::GetFolderPath('CommonPrograms')
     $menu = Join-Path $programs 'Conduit.lnk'
     $legacyMenu = Join-Path $programs 'Conduit Client.lnk'

@@ -31,7 +31,7 @@ try {
     Test-PublishedExecutable (Join-Path $stage 'WorkTunnel.exe') 'app'
     & (Join-Path $PSScriptRoot 'check-release-resources.ps1') -Executable (Join-Path $stage 'WorkTunnel.exe') -Report (Join-Path $root "artifacts\private\resources\$version\$Flavor.json")
     [IO.File]::WriteAllText((Join-Path $stage 'release-manifest.json'), (@{Version="$version";Flavor=$Flavor}|ConvertTo-Json))
-    Copy-Item -LiteralPath (Join-Path $root 'SETUP.md'),(Join-Path $root 'engines.lock.json') -Destination $stage
+    Copy-Item -LiteralPath (Join-Path $root 'SETUP.md'),(Join-Path $root 'VM_SETUP.md'),(Join-Path $root 'engines.lock.json') -Destination $stage
     if (Test-Path -LiteralPath (Join-Path $stage 'configs/profile.json')) { throw 'An enrolled profile must never ship' }
     $legacyProfile = Join-Path $root 'configs/profile.json'
     $identity = if (Test-Path -LiteralPath $legacyProfile) { (Get-Content -LiteralPath $legacyProfile -Raw | ConvertFrom-Json).uuid } else { '' }

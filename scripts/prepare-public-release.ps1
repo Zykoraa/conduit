@@ -36,7 +36,26 @@ try {
             (Get-FileHash -LiteralPath (Join-Path $assets $setupName) -Algorithm SHA256).Hash -ne $hashes[$flavor]) { throw 'Release bytes changed during staging' }
     }
 } finally { $signer.Dispose() }
-$allowed = @("Conduit-Owner-$Version-Setup.exe","Conduit-Client-$Version-Setup.exe","Conduit-Owner-$Version.wtupdate","Conduit-Client-$Version.wtupdate",'Conduit-Owner-stable.json','Conduit-Client-stable.json','SHA256SUMS.txt')
+# Server package is restricted to tracked public helpers and release documentation.
+$guideName = "Conduit-VM-Setup-$Version.md"
+$serverName = "Conduit-Server-$Version.zip"
+Copy-Item -LiteralPath (Join-Path $repository 'VM_SETUP.md') -Destination (Join-Path $assets $guideName) -Force
+$serverFiles = @(& git -C $repository ls-files server/)
+if ($LASTEXITCODE -ne 0 -or !$serverFiles.Count) { throw 'Tracked server inventory unavailable' }
+$zipPath = Join-Path $assets $serverName
+if (Test-Path -LiteralPath $zipPath) { Remove-Item -LiteralPath $zipPath }
+$archive = [IO.Compression.ZipFile]::Open($zipPath, [IO.Compression.ZipArchiveMode]::Create)
+try {
+    foreach ($relative in @($serverFiles) + @('VM_SETUP.md','RELEASE_NOTES.md')) {
+        if ($relative -match '(^|/)\.\.(/|$)' -or $relative -notmatch '^(server/[^/]+|VM_SETUP\.md|RELEASE_NOTES\.md)$') { throw 'Unexpected server archive path' }
+        $source = Join-Path $repository $relative
+        if ([IO.Path]::GetExtension($source) -in @('.sh','.py')) {
+            if ([IO.File]::ReadAllBytes($source) -contains 13) { throw "Executable requires Unix line endings: $relative" }
+        }
+        [void][IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive,$source,$relative,[IO.Compression.CompressionLevel]::Optimal)
+    }
+} finally { $archive.Dispose() }
+$allowed = @("Conduit-Owner-$Version-Setup.exe","Conduit-Client-$Version-Setup.exe","Conduit-Owner-$Version.wtupdate","Conduit-Client-$Version.wtupdate",'Conduit-Owner-stable.json','Conduit-Client-stable.json','SHA256SUMS.txt',$guideName,$serverName)
 foreach ($file in Get-ChildItem -LiteralPath $assets -File) { if ($file.Name -notin $allowed) { throw "Unexpected publication file: $($file.Name)" } }
 $lines = foreach ($file in Get-ChildItem -LiteralPath $assets -File | Where-Object Name -ne 'SHA256SUMS.txt' | Sort-Object Name) { "$( (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant() )  $($file.Name)" }
 $lines | Set-Content -LiteralPath (Join-Path $assets 'SHA256SUMS.txt') -Encoding utf8NoBOM

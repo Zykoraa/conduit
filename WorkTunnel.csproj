@@ -12,7 +12,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyTitle>Conduit</AssemblyTitle>
     <Product>Conduit</Product>
-    <Version>2.4.3</Version>
+    <Version>2.4.4</Version>
     <ApplicationIcon>assets/Conduit.ico</ApplicationIcon>
 
     <!-- Distribution: one self-contained .exe; coworkers install nothing. -->

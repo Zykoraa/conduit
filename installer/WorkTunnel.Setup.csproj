@@ -3,7 +3,7 @@
     <OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework><UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier><SelfContained>true</SelfContained><PublishSingleFile>true</PublishSingleFile><EnableCompressionInSingleFile>true</EnableCompressionInSingleFile><IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <ApplicationManifest>../app.manifest</ApplicationManifest><AssemblyName>WorkTunnel.Setup</AssemblyName><Version>2.4.3</Version><AssemblyTitle>Conduit Setup</AssemblyTitle><Product>Conduit</Product>
+    <ApplicationManifest>../app.manifest</ApplicationManifest><AssemblyName>WorkTunnel.Setup</AssemblyName><Version>2.4.4</Version><AssemblyTitle>Conduit Setup</AssemblyTitle><Product>Conduit</Product>
     <ApplicationIcon>../assets/Conduit.ico</ApplicationIcon>
     <DefineConstants Condition="'$(OwnerBuild)'=='true'">$(DefineConstants);OWNER_BUILD</DefineConstants>
   </PropertyGroup>

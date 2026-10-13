@@ -53,3 +53,7 @@ scripts/check-public-source.ps1 checks tracked paths and template/default invari
 Do not commit personal links, generated runtime configurations, credentials or diagnostic reports, or paste them into public issues. Complete legacy profiles remain importable; older profiles missing their REALITY public key or short ID require a full connection link.
 
 Upstream engines are unmodified and pinned in engines.lock.json. Third-party notices remain with their dependencies. Internal WorkTunnel executable/data/IPC identifiers preserve compatibility with existing Conduit installations.
+
+## VM setup guide
+
+[VM_SETUP.md](VM_SETUP.md) documents Conduit’s existing server `147.224.209.249`, Oracle networking and Xray settings. The 2.4.4 documentation release preserves existing client/server behavior and credentials.
